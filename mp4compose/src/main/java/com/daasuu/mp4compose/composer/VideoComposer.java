@@ -45,11 +45,12 @@ class VideoComposer {
     private final float timeScale;
     private final long trimStartUs;
     private final long trimEndUs;
+    private final long durationUs;
     private final Logger logger;
 
     VideoComposer(@NonNull MediaExtractor mediaExtractor, int trackIndex,
                   @NonNull MediaFormat outputFormat, @NonNull MuxRender muxRender, float timeScale,
-                  final long trimStartMs, final long trimEndMs, @NonNull Logger logger) {
+                  final long trimStartMs, final long trimEndMs, final long durationUs, @NonNull Logger logger) {
         this.mediaExtractor = mediaExtractor;
         this.trackIndex = trackIndex;
         this.outputFormat = outputFormat;
@@ -57,6 +58,7 @@ class VideoComposer {
         this.timeScale = timeScale;
         this.trimStartUs = TimeUnit.MILLISECONDS.toMicros(trimStartMs);
         this.trimEndUs = trimEndMs == -1 ? trimEndMs : TimeUnit.MILLISECONDS.toMicros(trimEndMs);
+        this.durationUs = durationUs;
         this.logger = logger;
     }
 
@@ -205,7 +207,8 @@ class VideoComposer {
         decoder.releaseOutputBuffer(result, doRender);
         if (doRender) {
             decoderSurface.awaitNewImage();
-            decoderSurface.drawImage();
+            float elapsedTime = ((float) bufferInfo.presentationTimeUs - (trimStartUs == -1 ? 0 : trimStartUs)) / durationUs;
+            decoderSurface.drawImage(elapsedTime);
             encoderSurface.setPresentationTime(bufferInfo.presentationTimeUs * 1000);
             encoderSurface.swapBuffers();
         } else if (bufferInfo.presentationTimeUs != 0) {
