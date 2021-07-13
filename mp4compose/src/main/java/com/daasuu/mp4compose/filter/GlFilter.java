@@ -85,6 +85,7 @@ public class GlFilter {
         getHandle("aPosition");
         getHandle("aTextureCoord");
         getHandle("sTexture");
+        getHandle("uElapsedTime");
     }
 
     public void setFragmentShaderSource(String fragmentShaderSource) {
@@ -110,7 +111,7 @@ public class GlFilter {
     }
 
     //
-    public void draw(final int texName, final GlFramebufferObject fbo) {
+    public void draw(final int texName, final GlFramebufferObject fbo, final float elapsedTime) {
         useProgram();
 
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBufferName);
@@ -118,6 +119,11 @@ public class GlFilter {
         GLES20.glVertexAttribPointer(getHandle("aPosition"), VERTICES_DATA_POS_SIZE, GL_FLOAT, false, VERTICES_DATA_STRIDE_BYTES, VERTICES_DATA_POS_OFFSET);
         GLES20.glEnableVertexAttribArray(getHandle("aTextureCoord"));
         GLES20.glVertexAttribPointer(getHandle("aTextureCoord"), VERTICES_DATA_UV_SIZE, GL_FLOAT, false, VERTICES_DATA_STRIDE_BYTES, VERTICES_DATA_UV_OFFSET);
+
+        int elapsedTimeHandle = getHandle("uElapsedTime");
+        if (elapsedTimeHandle != -1) {
+            GLES20.glUniform1f(elapsedTimeHandle, elapsedTime);
+        }
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texName);
@@ -153,9 +159,6 @@ public class GlFilter {
         int location = GLES20.glGetAttribLocation(program, name);
         if (location == -1) {
             location = GLES20.glGetUniformLocation(program, name);
-        }
-        if (location == -1) {
-            throw new IllegalStateException("Could not get attrib or uniform location for " + name);
         }
         handleMap.put(name, location);
         return location;

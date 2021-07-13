@@ -13,6 +13,8 @@ import com.daasuu.mp4compose.filter.GlCGAColorspaceFilter;
 import com.daasuu.mp4compose.filter.GlContrastFilter;
 import com.daasuu.mp4compose.filter.GlCrosshatchFilter;
 import com.daasuu.mp4compose.filter.GlExposureFilter;
+import com.daasuu.mp4compose.filter.GlFadeInFilter;
+import com.daasuu.mp4compose.filter.GlFadeOutFilter;
 import com.daasuu.mp4compose.filter.GlFilter;
 import com.daasuu.mp4compose.filter.GlFilterGroup;
 import com.daasuu.mp4compose.filter.GlGammaFilter;
@@ -62,6 +64,8 @@ public enum FilterType {
     CONTRAST,
     CROSSHATCH,
     EXPOSURE,
+    FADEIN,
+    FADEOUT,
     FILTER_GROUP_SAMPLE,
     GAMMA,
     GAUSSIAN_FILTER,
@@ -125,6 +129,14 @@ public enum FilterType {
                 return new GlCrosshatchFilter();
             case EXPOSURE:
                 return new GlExposureFilter();
+            case FADEIN:
+                GlFadeInFilter glFadeInFilter = new GlFadeInFilter();
+                glFadeInFilter.setFadeColor(new float[]{ 1f, 1f, 1f });
+                return glFadeInFilter;
+            case FADEOUT:
+                GlFadeOutFilter glFadeOutFilter = new GlFadeOutFilter();
+                glFadeOutFilter.setFadeColor(new float[]{ 1f, 1f, 1f });
+                return glFadeOutFilter;
             case FILTER_GROUP_SAMPLE:
                 return new GlFilterGroup(new GlSepiaFilter(), new GlVignetteFilter());
             case GAMMA:
